@@ -7,7 +7,10 @@ import Link from "next/link";
 import {
   getPdfs,
   deletePdf,
+  sharePdf,
 } from "@/services/pdf.service";
+
+
 
 interface PdfDocument {
   id: string;
@@ -212,6 +215,28 @@ export default function PdfListPage() {
                       >
                         Delete
                       </button>
+
+                      <button
+  onClick={async () => {
+    try {
+      const response =
+        await sharePdf(doc.id);
+
+      navigator.clipboard.writeText(
+        response.data.shareLink
+      );
+
+      alert(
+        "Share link copied!"
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }}
+  className="mr-2 px-3 py-2 ml-2 border rounded-lg text-blue-500"
+>
+  Share
+</button>
 
                     </td>
 

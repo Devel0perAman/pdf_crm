@@ -1,7 +1,9 @@
 import { Response } from "express";
+import { Request } from "express";
 import prisma from "../config/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { createRecordStorage } from "../services/storage.service";
+import { sendEmail } from "../services/email.service";
 
 export const createPdf = async (
   req: AuthRequest,
@@ -10,12 +12,20 @@ export const createPdf = async (
   try {
     const {
   title,
+  recipientEmail,
   descriptionRichtext,
   descriptionHtml,
   textContent,
   signatureType,
   signatureData,
 } = req.body;
+
+if (!recipientEmail?.trim()) {
+  return res.status(400).json({
+    message:
+      "Recipient email is required",
+  });
+}
 
 if (!title?.trim()) {
   return res.status(400).json({
@@ -29,10 +39,11 @@ if (!signatureType || !signatureData) {
   });
 }
 
-   const pdf = await prisma.pdfDocument.create({
+const pdf = await prisma.pdfDocument.create({
   data: {
     userId: req.user!.id,
     title,
+    recipientEmail,
     descriptionRichtext,
     descriptionHtml,
     textContent,
@@ -50,13 +61,46 @@ if (!signatureType || !signatureData) {
     pdf.textContent || "",
 });
 
-    await prisma.activityLog.create({
-      data: {
-        userId: req.user!.id,
-        documentId: pdf.id,
-        action: "PDF_CREATED",
-      },
-    });
+    await prisma.notification.create({
+  data: {
+    userId: req.user!.id,
+    title: "PDF Created",
+    message:
+      `Document "${pdf.title}" was created successfully.`,
+  },
+});
+
+const shareLink =
+  `${process.env.FRONTEND_URL}/shared/${pdf.id}`;
+
+await prisma.pdfDocument.update({
+  where: {
+    id: pdf.id,
+  },
+  data: {
+    shareLink,
+  },
+});
+
+await sendEmail(
+  recipientEmail,
+  "PDF Shared With You",
+  `
+    <h2>${pdf.title}</h2>
+
+    <p>
+      A PDF document has been shared with you.
+    </p>
+
+    <p>
+      Click below to open it:
+    </p>
+
+    <a href="${shareLink}">
+      Open PDF
+    </a>
+  `
+);
 
     return res.status(201).json(pdf);
   } catch (error) {
@@ -174,12 +218,21 @@ const pdf =
   });
 
   await prisma.activityLog.create({
-    data: {
-      userId: req.user!.id,
-      documentId: pdf.id,
-      action: "PDF_UPDATED",
-    },
-  });
+  data: {
+    userId: req.user!.id,
+    documentId: pdf.id,
+    action: "PDF_UPDATED",
+  },
+});
+
+await prisma.notification.create({
+  data: {
+    userId: req.user!.id,
+    title: "PDF Updated",
+    message:
+      `Document "${pdf.title}" was updated successfully.`,
+  },
+}); 
 
   res.json(pdf);
 };
@@ -226,13 +279,77 @@ await prisma.pdfDocument.delete({
 });
 
   await prisma.activityLog.create({
-    data: {
-      userId: req.user!.id,
-      action: "PDF_DELETED",
-    },
-  });
+  data: {
+    userId: req.user!.id,
+    action: "PDF_DELETED",
+  },
+});
+
+await prisma.notification.create({
+  data: {
+    userId: req.user!.id,
+    title: "PDF Deleted",
+    message:
+      `Document "${existingPdf.title}" was deleted.`,
+  },
+});
 
   res.json({
     success: true,
   });
+};
+
+export const getSharedPdf = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const pdfId =
+      Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id;
+
+    if (!pdfId) {
+      return res.status(400).json({
+        message: "Invalid PDF id",
+      });
+    }
+
+    const pdf =
+      await prisma.pdfDocument.findUnique({
+        where: {
+          id: pdfId,
+        },
+        select: {
+          id: true,
+          title: true,
+          descriptionHtml: true,
+          textContent: true,
+          signatureType: true,
+          signatureData: true,
+          createdAt: true,
+          user: {
+            select: {
+              name: true,
+              username: true,
+            },
+          },
+        },
+      });
+
+    if (!pdf) {
+      return res.status(404).json({
+        message: "PDF not found",
+      });
+    }
+
+    res.json(pdf);
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      message:
+        "Failed to load shared PDF",
+    });
+  }
 };

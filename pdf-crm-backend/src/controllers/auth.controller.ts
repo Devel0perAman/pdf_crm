@@ -13,33 +13,52 @@ export const registerUser = async (
     const {
       name,
       username,
+      email,
       password,
     } = req.body;
 
-    if (
-      !name ||
-      !username ||
-      !password
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "All fields are required",
-      });
-    }
+   if (
+  !name ||
+  !username ||
+  !email ||
+  !password
+) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "All fields are required",
+  });
+}
+
+const usernameRegex =
+  /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}$/;
+
+if (
+  !usernameRegex.test(
+    username
+  )
+) {
+  return res.status(400).json({
+    success: false,
+    message:
+      "Username must include at least one uppercase letter, a special character, and end in a 4-digit number.",
+  });
+}
 
     const existingUser =
-      await prisma.user.findUnique({
+      await prisma.user.findFirst({
         where: {
-          username,
+          OR: [
+            { username },
+            { email },
+          ],
         },
       });
 
     if (existingUser) {
       return res.status(400).json({
-        success: false,
         message:
-          "Username already exists",
+          "Username or email already exists",
       });
     }
 
@@ -51,8 +70,9 @@ export const registerUser = async (
         data: {
           name,
           username,
+          email,
           passwordHash,
-          role: "USER",
+          role: "user",
         },
       });
 

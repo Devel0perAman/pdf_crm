@@ -47,3 +47,15 @@ export const deletePdf = (
     `/pdfs/${id}`
   );
 };
+
+export const sharePdf =
+  (id: string) =>
+    api.post(
+      `/pdfs/${id}/share`
+    );
+
+export const getSharedPdf =
+  (id: string) =>
+    api.get(
+      `/pdfs/shared/${id}`
+    );

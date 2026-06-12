@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState, } from "react";
 
 import {
   LayoutDashboard,
@@ -12,51 +13,84 @@ import {
   BarChart3,
   Settings,
   LogOut,
+  Users,
 } from "lucide-react";
-
-const menuItems = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "PDFs",
-    href: "/dashboard/pdfs",
-    icon: FileText,
-  },
-  {
-    label: "Create PDF",
-    href: "/dashboard/pdfs/create",
-    icon: FilePlus,
-  },
-  {
-    label: "Signatures",
-    href: "/dashboard/signatures",
-    icon: PenTool,
-  },
-  {
-    label: "Activity",
-    href: "/dashboard/activity",
-    icon: Activity,
-  },
-  {
-    label: "Analytics",
-    href: "/dashboard/analytics",
-    icon: BarChart3,
-  },
-  {
-    label: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-  },
-];
 
 export default function FloatingSidebar() {
   const pathname = usePathname();
 
+  const [isAdmin, setIsAdmin] =
+    useState(false);
+
+  useEffect(() => {
+    const user = JSON.parse(
+      localStorage.getItem("user") ||
+      "{}"
+    );
+
+    setIsAdmin(
+      user.role === "admin"
+    );
+  }, []);
+
+  const menuItems = [
+    {
+      label: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      label: "PDFs",
+      href: "/dashboard/pdfs",
+      icon: FileText,
+    },
+    {
+      label: "Create PDF",
+      href: "/dashboard/pdfs/create",
+      icon: FilePlus,
+    },
+    {
+      label: "Signatures",
+      href: "/dashboard/signatures",
+      icon: PenTool,
+    },
+    {
+      label: "Activity",
+      href: "/dashboard/activity",
+      icon: Activity,
+    },
+    {
+      label: "Analytics",
+      href: "/dashboard/analytics",
+      icon: BarChart3,
+    },
+    {
+      label: "Settings",
+      href: "/dashboard/settings",
+      icon: Settings,
+    },
+
+    ...(isAdmin
+      ? [
+        {
+          label: "Users",
+          href:
+            "/dashboard/users",
+          icon: Users,
+        },
+      ]
+      : []),
+  ];
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem(
+      "token"
+    );
+
+    localStorage.removeItem(
+      "user"
+    );
+
     window.location.href = "/";
   };
 
@@ -82,10 +116,9 @@ export default function FloatingSidebar() {
                 items-center
                 justify-center
                 transition
-                ${
-                  active
-                    ? "bg-green-500 text-white"
-                    : "hover:bg-gray-100"
+                ${active
+                  ? "bg-green-500 text-white"
+                  : "hover:bg-gray-100"
                 }
               `}
             >

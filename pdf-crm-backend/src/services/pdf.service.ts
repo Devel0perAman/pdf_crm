@@ -1,12 +1,7 @@
 import api from "./api";
 
-export const createPdf = (
-  data: any
-) =>
-  api.post(
-    "/pdfs",
-    data
-  );
+export const createPdf = <T = unknown>(data: T) =>
+  api.post("/pdfs", data);
 
 export const getPdfs = () =>
   api.get("/pdfs");
@@ -16,14 +11,8 @@ export const getPdfById = (
 ) =>
   api.get(`/pdfs/${id}`);
 
-export const updatePdf = (
-  id: string,
-  data: any
-) =>
-  api.put(
-    `/pdfs/${id}`,
-    data
-  );
+export const updatePdf = <T = unknown>(id: string, data: T) =>
+  api.put(`/pdfs/${id}`, data);
 
 export const deletePdf = (
   id: string

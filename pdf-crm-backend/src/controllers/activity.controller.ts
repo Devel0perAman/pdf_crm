@@ -1,20 +1,52 @@
-import { Request, Response } from "express";
+import { Response } from "express";
+
 import prisma from "../config/prisma";
+import { AuthRequest } from "../middleware/auth.middleware";
 
 export const getActivities =
   async (
-    req: Request,
+    req: AuthRequest,
     res: Response
   ) => {
-    const logs =
-      await prisma.activityLog.findMany({
-        include: {
-          user: true,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+    try {
+      const logs =
+        await prisma.activityLog.findMany({
+          where:
+            req.user?.role === "admin"
+              ? {}
+              : {
+                  userId:
+                    req.user!.id,
+                },
 
-    res.json(logs);
+          include: {
+            user: {
+              select: {
+                name: true,
+                username: true,
+              },
+            },
+
+            pdfDocument: {
+              select: {
+                title: true,
+              },
+            },
+          },
+
+          orderBy: {
+            createdAt:
+              "desc",
+          },
+        });
+
+      res.json(logs);
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        message:
+          "Failed to load activities",
+      });
+    }
   };
