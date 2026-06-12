@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const user_controller_1 = require("../controllers/user.controller");
+const user_controller_2 = require("../controllers/user.controller");
+const upload_middleware_1 = require("../middleware/upload.middleware");
+const router = (0, express_1.Router)();
+router.get("/profile", auth_middleware_1.authenticateToken, user_controller_1.getProfile);
+router.put("/profile", auth_middleware_1.authenticateToken, user_controller_1.updateProfile);
+router.put("/password", auth_middleware_1.authenticateToken, user_controller_1.changePassword);
+router.delete("/profile", auth_middleware_1.authenticateToken, user_controller_2.deleteAccount);
+router.get("/", auth_middleware_1.authenticateToken, user_controller_1.getAllUsers);
+router.put("/:id/role", auth_middleware_1.authenticateToken, user_controller_1.updateUserRole);
+router.delete("/:id", auth_middleware_1.authenticateToken, user_controller_1.deleteUser);
+router.post("/profile-image", auth_middleware_1.authenticateToken, upload_middleware_1.upload.single("image"), user_controller_1.uploadProfileImage);
+exports.default = router;
