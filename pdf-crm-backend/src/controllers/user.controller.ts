@@ -1,3 +1,4 @@
+// @ts-ignore: express may not be available in all environments for type checking
 import { Response } from "express";
 // @ts-ignore: bcryptjs may not have type declarations in this project
 import bcrypt from "bcryptjs";
@@ -46,7 +47,7 @@ export const updateProfile = async (
   name,
   username,
   email,
-} = req.body;
+} = (req as any).body;
 
     const user =
       await prisma.user.update({
@@ -79,7 +80,7 @@ export const changePassword = async (
     const {
       currentPassword,
       newPassword,
-    } = req.body;
+    } = (req as any).body;
 
     const user =
       await prisma.user.findUnique({
@@ -227,12 +228,11 @@ export const updateUserRole =
       const user =
         await prisma.user.update({
           where: {
-            id: req.params.id as string,
+            id: (req as any).params.id as string,
           },
 
           data: {
-            role:
-              req.body.role,
+            role: (req as any).body.role,
           },
         });
 
@@ -262,9 +262,8 @@ export const updateUserRole =
         });
       }
 
-      const userId = Array.isArray(req.params.id)
-        ? req.params.id[0]
-        : req.params.id;
+      const rawId = (req as any).params.id;
+      const userId = Array.isArray(rawId) ? rawId[0] : rawId;
 
       if (!userId) {
         return res.status(400).json({
@@ -297,7 +296,7 @@ export const updateUserRole =
     res: Response
   ) => {
     try {
-      if (!req.file) {
+      if (!(req as any).file) {
         return res.status(400).json({
           message:
             "Image required",
@@ -305,7 +304,7 @@ export const updateUserRole =
       }
 
       const imageUrl =
-        `/uploads/profiles/${req.file.filename}`;
+        `/uploads/profiles/${(req as any).file.filename}`;
 
       const user =
         await prisma.user.update({
