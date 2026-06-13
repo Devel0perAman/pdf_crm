@@ -9,8 +9,10 @@ export default function CreatePdfPage() {
   const [title, setTitle] =
     useState("");
 
-  const [description, setDescription] =
-    useState("");
+ const [
+  recipientEmail,
+  setRecipientEmail,
+] = useState("");
 
   const [
     descriptionHtml,
@@ -42,6 +44,12 @@ export default function CreatePdfPage() {
         alert("Title is required");
         return;
       }
+      if (!recipientEmail.trim()) {
+  alert(
+    "Recipient email is required"
+  );
+  return;
+}
 
       if (!signatureData.trim()) {
         alert("Signature is required");
@@ -51,20 +59,20 @@ export default function CreatePdfPage() {
       setLoading(true);
 
       await createPdf({
-        title,
-        descriptionRichtext,
-        descriptionHtml,
-        textContent,
-        signatureType,
-        signatureData,
-      });
-
+  title,
+  recipientEmail,
+  descriptionRichtext,
+  descriptionHtml,
+  textContent,
+  signatureType,
+  signatureData,
+});
       alert(
         "PDF Saved Successfully"
       );
 
       setTitle("");
-      setDescription("");
+      setRecipientEmail("");
       setSignatureData("");
     } catch (error) {
       console.error(error);
@@ -142,17 +150,22 @@ export default function CreatePdfPage() {
                 className="w-full border rounded-xl p-3"
               />
 
-              <textarea
-                value={description}
-                onChange={(e) =>
-                  setDescription(
-                    e.target.value
-                  )
-                }
-                rows={5}
-                placeholder="Description"
-                className="w-full border rounded-xl p-3"
-              />
+              <input
+  type="email"
+  value={recipientEmail}
+  onChange={(e) =>
+    setRecipientEmail(
+      e.target.value
+    )
+  }
+  placeholder="Recipient Email"
+  className="
+    w-full
+    border
+    rounded-xl
+    p-3
+  "
+/>
 
               <div className="border rounded-xl p-3 bg-gray-50">
 
@@ -205,10 +218,12 @@ export default function CreatePdfPage() {
                   "Document Title"}
               </h3>
 
-              <p className="text-gray-600 text-sm whitespace-pre-wrap">
-                {description ||
-                  "Document description preview"}
-              </p>
+              <p className="text-gray-600 text-sm">
+  Recipient:
+  {" "}
+  {recipientEmail ||
+    "No recipient selected"}
+</p>
 
               <div className="mt-10 border-t pt-5">
 
