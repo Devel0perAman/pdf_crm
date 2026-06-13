@@ -2,6 +2,7 @@ import api from "./api";
 
 export interface CreatePdfPayload {
   title: string;
+  recipientEmail: string;
   descriptionRichtext: string;
   descriptionHtml: string;
   textContent: string;
