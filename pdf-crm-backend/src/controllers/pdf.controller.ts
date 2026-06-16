@@ -52,6 +52,14 @@ const pdf = await prisma.pdfDocument.create({
   },
 });
 
+await prisma.activityLog.create({
+  data: {
+    userId: req.user!.id,
+    documentId: pdf.id,
+    action: "PDF_CREATED",
+  },
+});
+
     await createRecordStorage({
   id: pdf.id,
   title: pdf.title,

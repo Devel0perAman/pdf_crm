@@ -51,16 +51,49 @@ export default function AnalyticsPage() {
   return (
     <main className="max-w-7xl mx-auto">
 
-      <h1 className="text-4xl font-bold mb-8">
+      <h1
+  className="
+    text-2xl
+    md:text-4xl
+    font-bold
+    mb-6
+    md:mb-8
+  "
+>
         Analytics
       </h1>
 
-      <div className="grid md:grid-cols-3 gap-6">
+     <div
+  className="
+    grid
+    grid-cols-1
+    sm:grid-cols-2
+    lg:grid-cols-3
+    gap-4
+    md:gap-6
+  "
+>
 
-        <div className="bg-white rounded-3xl border p-6">
+       <div
+  className="
+    bg-white
+    rounded-3xl
+    border
+    p-5
+    md:p-6
+    shadow-sm
+  "
+>
           <p>Total PDFs</p>
 
-          <h2 className="text-5xl font-bold mt-3">
+          <h2
+  className="
+    text-3xl
+    md:text-5xl
+    font-bold
+    mt-3
+  "
+>
             {data.totalPdfs}
           </h2>
         </div>
@@ -68,7 +101,14 @@ export default function AnalyticsPage() {
         <div className="bg-white rounded-3xl border p-6">
           <p>Total Signatures</p>
 
-          <h2 className="text-5xl font-bold mt-3">
+          <h2
+  className="
+    text-3xl
+    md:text-5xl
+    font-bold
+    mt-3
+  "
+>
             {
               data.totalSignatures
             }
@@ -78,7 +118,14 @@ export default function AnalyticsPage() {
         <div className="bg-white rounded-3xl border p-6">
           <p>Activities</p>
 
-          <h2 className="text-5xl font-bold mt-3">
+          <h2
+  className="
+    text-3xl
+    md:text-5xl
+    font-bold
+    mt-3
+  "
+>
             {
               data.totalActivities
             }
@@ -87,9 +134,27 @@ export default function AnalyticsPage() {
 
       </div>
 
-      <div className="mt-8 bg-white rounded-3xl border p-6">
+      <div
+  className="
+    mt-6
+    md:mt-8
+    bg-white
+    rounded-3xl
+    border
+    p-5
+    md:p-6
+    shadow-sm
+  "
+>
 
-        <h2 className="text-2xl font-semibold mb-5">
+        <h2
+  className="
+    text-xl
+    md:text-2xl
+    font-semibold
+    mb-5
+  "
+>
           Recent PDFs
         </h2>
 
@@ -98,9 +163,16 @@ export default function AnalyticsPage() {
           {data.recentPdfs.map(
             (pdf: PDF) => (
               <div
-                key={pdf.id}
-                className="border rounded-xl p-4"
-              >
+  key={pdf.id}
+  className="
+    border
+    rounded-xl
+    p-4
+    break-words
+    hover:bg-gray-50
+    transition
+  "
+>
                 {pdf.title}
               </div>
             )

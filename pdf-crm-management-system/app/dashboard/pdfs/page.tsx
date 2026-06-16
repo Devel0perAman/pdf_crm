@@ -93,11 +93,21 @@ export default function PdfListPage() {
 
       <div className="max-w-7xl mx-auto">
 
-        <div className="flex justify-between items-center mb-8">
+        <div
+  className="
+    flex
+    flex-col
+    md:flex-row
+    md:justify-between
+    md:items-center
+    gap-4
+    mb-8
+  "
+>
 
           <div>
 
-            <h1 className="text-4xl font-bold">
+            <h1 className="text-2xl md:text-4xl font-bold">
               PDF Documents
             </h1>
 
@@ -109,7 +119,16 @@ export default function PdfListPage() {
 
           <Link
             href="/dashboard/pdfs/create"
-            className="bg-green-500 text-white px-6 py-3 rounded-2xl"
+            className="
+  bg-green-500
+  text-white
+  px-6
+  py-3
+  rounded-2xl
+  w-full
+  md:w-auto
+  text-center
+"
           >
             Create PDF
           </Link>
@@ -126,7 +145,14 @@ export default function PdfListPage() {
     setSearch(e.target.value)
   }
   placeholder="Search PDFs..."
-  className="w-full border rounded-xl p-3"
+  className="
+  w-full
+  border
+  rounded-xl
+  p-3
+  text-sm
+  md:text-base
+"
 />
 
           </div>
@@ -140,6 +166,7 @@ export default function PdfListPage() {
               No PDFs found
             </div>
           ) : (
+            <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
 
               <thead>
@@ -246,7 +273,139 @@ export default function PdfListPage() {
               </tbody>
 
             </table>
+            </div>
+
           )}
+
+          <div className="lg:hidden space-y-4">
+
+  {filteredPdfs.map((doc) => (
+    <div
+      key={doc.id}
+      className="
+        bg-white
+        border
+        rounded-3xl
+        p-5
+        shadow-sm
+      "
+    >
+
+      <div className="space-y-3">
+
+        <div>
+          <p className="text-xs text-gray-500">
+            Title
+          </p>
+
+          <p className="font-semibold">
+            {doc.title}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500">
+            Signature
+          </p>
+
+          <p>
+            {doc.signatureType || "-"}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500">
+            Created
+          </p>
+
+          <p>
+            {new Date(
+              doc.createdAt
+            ).toLocaleDateString()}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 pt-3">
+
+          <Link
+            href={`/dashboard/pdfs/${doc.id}`}
+            className="
+              text-center
+              border
+              rounded-xl
+              py-2
+            "
+          >
+            View
+          </Link>
+
+          <Link
+            href={`/dashboard/pdfs/edit/${doc.id}`}
+            className="
+              text-center
+              border
+              rounded-xl
+              py-2
+            "
+          >
+            Edit
+          </Link>
+
+          <button
+            onClick={async () => {
+              try {
+                const response =
+                  await sharePdf(
+                    doc.id
+                  );
+
+                navigator.clipboard.writeText(
+                  response.data.shareLink
+                );
+
+                alert(
+                  "Share link copied!"
+                );
+              } catch (error) {
+                console.error(
+                  error
+                );
+              }
+            }}
+            className="
+              text-blue-500
+              border
+              rounded-xl
+              py-2
+            "
+          >
+            Share
+          </button>
+
+          <button
+            onClick={() =>
+              handleDelete(
+                doc.id
+              )
+            }
+            className="
+              text-red-500
+              border
+              rounded-xl
+              py-2
+            "
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  ))}
+
+</div>
 
         </div>
 

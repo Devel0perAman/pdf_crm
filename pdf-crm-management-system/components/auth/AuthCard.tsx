@@ -142,19 +142,49 @@ export default function AuthCard() {
     };
 
   return (
-    <div className="grid lg:grid-cols-2 gap-10 items-center">
+    <div
+  className="
+    grid
+    grid-cols-1
+    lg:grid-cols-2
+    gap-8
+    lg:gap-10
+    items-center
+  "
+>
 
       {/* LEFT */}
 
-      <div className="max-w-md mx-auto w-full">
+     <div
+  className="
+    w-full
+    max-w-md
+    mx-auto
+    px-4
+    lg:px-0
+  "
+>
 
-        <h1 className="text-4xl font-bold">
+        <h1
+  className="
+    text-3xl
+    md:text-4xl
+    font-bold
+  "
+>
           {isLogin
             ? "Welcome Back"
             : "Create Account"}
         </h1>
 
-        <p className="text-gray-500 mt-2 pb-8">
+       <p
+  className="
+    text-gray-500
+    mt-2
+    pb-6
+    md:pb-8
+  "
+>
           Join PDF CRM Management System
         </p>
 
@@ -171,7 +201,13 @@ export default function AuthCard() {
                 )
               }
               placeholder="Full Name"
-              className="w-full border rounded-xl p-4"
+              className="
+  w-full
+  border
+  rounded-xl
+  p-3
+  md:p-4
+"
             />
 
             <input
@@ -182,7 +218,13 @@ export default function AuthCard() {
                 )
               }
               placeholder="Username"
-              className="w-full border rounded-xl p-4"
+              className="
+  w-full
+  border
+  rounded-xl
+  p-3
+  md:p-4
+"
             />
 
             <input
@@ -194,7 +236,13 @@ export default function AuthCard() {
                 )
               }
               placeholder="Email Address"
-              className="w-full border rounded-xl p-4"
+              className="
+                w-full
+                border
+                rounded-xl
+                p-3
+                md:p-4
+              "
             />
 
             <input
@@ -206,7 +254,13 @@ export default function AuthCard() {
                 )
               }
               placeholder="Password"
-              className="w-full border rounded-xl p-4"
+              className="
+  w-full
+  border
+  rounded-xl
+  p-3
+  md:p-4
+"
             />
 
             <button
@@ -215,13 +269,14 @@ export default function AuthCard() {
               }
               disabled={loading}
               className="
-                w-full
-                bg-black
-                text-white
-                rounded-xl
-                py-4
-                disabled:opacity-50
-              "
+  w-full
+  bg-black
+  text-white
+  rounded-xl
+  py-3
+  md:py-4
+  disabled:opacity-50
+"
             >
               {loading
                 ? "Creating..."
@@ -244,7 +299,13 @@ export default function AuthCard() {
                 )
               }
               placeholder="Username"
-              className="w-full border rounded-xl p-4"
+              className="
+  w-full
+  border
+  rounded-xl
+  p-3
+  md:p-4
+"
             />
 
             <input
@@ -256,7 +317,13 @@ export default function AuthCard() {
                 )
               }
               placeholder="Password"
-              className="w-full border rounded-xl p-4"
+              className="
+  w-full
+  border
+  rounded-xl
+  p-3
+  md:p-4
+"
             />
 
             <button
@@ -264,14 +331,15 @@ export default function AuthCard() {
                 handleLogin
               }
               disabled={loading}
-              className="
-                w-full
-                bg-black
-                text-white
-                rounded-xl
-                py-4
-                disabled:opacity-50
-              "
+             className="
+  w-full
+  bg-black
+  text-white
+  rounded-xl
+  py-3
+  md:py-4
+  disabled:opacity-50
+"
             >
               {loading
                 ? "Logging In..."
@@ -310,7 +378,16 @@ export default function AuthCard() {
 
       {/* RIGHT IMAGE */}
 
-      <div className="relative h-[700px] rounded-[40px] overflow-hidden">
+      <div
+  className="
+    hidden
+    lg:block
+    relative
+    h-[700px]
+    rounded-[40px]
+    overflow-hidden
+  "
+>
 
         <Image
           src="/images/auth-image.jpg"

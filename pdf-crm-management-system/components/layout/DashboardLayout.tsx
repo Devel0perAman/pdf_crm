@@ -36,7 +36,18 @@ export default function DashboardLayout({
 
         <TopNavigation />
 
-        <div className="max-w-[1600px] mx-auto pl-32 pr-12 py-10">
+        <div
+  className="
+    max-w-[1600px]
+    mx-auto
+    px-4
+    sm:px-6
+    lg:pl-32
+    lg:pr-12
+    py-6
+    lg:py-10
+  "
+>
           {children}
         </div>
 

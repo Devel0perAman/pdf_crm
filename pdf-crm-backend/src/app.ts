@@ -8,13 +8,19 @@ import activityRoute from "./routes/activity.route";
 import dashboardRoutes from "./routes/dashboard.route";
 import analyticsRoute from "./routes/analytics.route";
 import notificationRoutes from "./routes/notification.route";
+import adminRoutes from "./routes/admin.route";
+
 import path from "path";
 
 const app = express();
 
 app.use(
   cors({
-    origin: "https://pdfcrm-nu.vercel.app",
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "https://pdfcrm-nu.vercel.app",
+    ],
     credentials: true,
   })
 );
@@ -31,11 +37,13 @@ app.use("/api/pdfs", pdfRoute);
 
 app.use("/api/activity", activityRoute);
 
-app.use( "/api/dashboard", dashboardRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.use("/api/analytics", analyticsRoute);
 
 app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/admin", adminRoutes);
 
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 

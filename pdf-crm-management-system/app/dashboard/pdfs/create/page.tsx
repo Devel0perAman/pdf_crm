@@ -86,17 +86,41 @@ export default function CreatePdfPage() {
   };
 
   return (
-    <main className="max-w-7xl mx-auto">
+   <main
+  className="
+    max-w-7xl
+    mx-auto
+    px-2
+    md:px-0
+   pb-40
+    lg:pb-0
+  "
+>
 
-      <h1 className="text-4xl font-bold mb-8">
+      <h1
+  className="
+    text-2xl
+    md:text-4xl
+    font-bold
+    mb-6
+    md:mb-8
+  "
+>
         Create PDF
       </h1>
-
-      <div className="grid lg:grid-cols-3 gap-6">
+<div className="grid lg:grid-cols-3 gap-6">
+      
 
         {/* Left Side */}
 
-        <div className="lg:col-span-2 space-y-6">
+        <div
+  className="
+    order-2
+    lg:order-1
+    lg:col-span-2
+    space-y-6
+  "
+>
 
           <PdfEditor
             onSignatureChange={(
@@ -126,12 +150,26 @@ export default function CreatePdfPage() {
         </div>
 
         {/* Right Side */}
-
-        <div className="space-y-6">
+<div
+  className="
+    order-1
+    lg:order-2
+    space-y-6
+  "
+>
+        
 
           {/* Document Settings */}
 
-          <div className="bg-white rounded-3xl border p-6">
+          <div
+  className="
+    bg-white
+    rounded-3xl
+    border
+    p-5
+    md:p-6
+  "
+>
 
             <h2 className="font-semibold text-xl mb-5">
               Document Information
@@ -180,24 +218,26 @@ export default function CreatePdfPage() {
               </div>
 
               <button
-                onClick={handleSave}
-                disabled={loading}
-                className="
-                  w-full
-                  bg-green-500
-                  text-white
-                  rounded-xl
-                  py-3
-                  font-medium
-                  hover:bg-green-600
-                  transition
-                  disabled:opacity-50
-                "
-              >
-                {loading
-                  ? "Saving..."
-                  : "Save PDF"}
-              </button>
+  onClick={handleSave}
+  disabled={loading}
+  className="
+    hidden
+    lg:block
+    w-full
+    bg-green-500
+    text-white
+    rounded-xl
+    py-3
+    font-medium
+    hover:bg-green-600
+    transition
+    disabled:opacity-50
+  "
+>
+  {loading
+    ? "Saving..."
+    : "Save PDF"}
+</button>
 
             </div>
 
@@ -205,7 +245,15 @@ export default function CreatePdfPage() {
 
           {/* Preview */}
 
-          <div className="bg-white rounded-3xl border p-6">
+          <div
+  className="
+    bg-white
+    rounded-3xl
+    border
+    p-5
+    md:p-6
+  "
+>
 
             <h2 className="font-semibold text-xl mb-5">
               PDF Preview
@@ -249,6 +297,34 @@ export default function CreatePdfPage() {
         </div>
 
       </div>
+      <div
+  className="
+    bg-white
+    rounded-2xl
+    border
+    shadow-xl
+    p-3
+    mt-6
+  "
+>
+  <button
+    onClick={handleSave}
+    disabled={loading}
+    className="
+      w-full
+      bg-green-500
+      text-white
+      rounded-xl
+      py-4
+      font-semibold
+      disabled:opacity-50
+    "
+  >
+    {loading
+      ? "Saving..."
+      : "Save PDF"}
+  </button>
+</div>
 
     </main>
   );

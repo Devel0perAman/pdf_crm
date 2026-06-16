@@ -131,9 +131,19 @@ export default function UsersPage() {
   return (
     <main className="max-w-7xl mx-auto">
 
-      <div className="flex items-center justify-between mb-8">
+     <div
+  className="
+    flex
+    flex-col
+    md:flex-row
+    md:items-center
+    md:justify-between
+    gap-4
+    mb-8
+  "
+>
 
-        <h1 className="text-4xl font-bold">
+       <h1 className="text-2xl md:text-4xl font-bold">
           User Management
         </h1>
 
@@ -147,16 +157,19 @@ export default function UsersPage() {
           placeholder="Search users..."
           className="
             border
-            rounded-2xl
-            px-4
-            py-3
-            w-72
+  rounded-2xl
+  px-4
+  py-3
+  w-full
+  md:w-72
           "
         />
 
       </div>
 
       <div className="bg-white border rounded-3xl overflow-hidden">
+
+        <div className="hidden lg:block overflow-x-auto">
 
         <table className="w-full">
 
@@ -293,6 +306,130 @@ export default function UsersPage() {
           </tbody>
 
         </table>
+        </div>
+
+        <div className="lg:hidden space-y-4">
+
+  {filteredUsers.map((user) => (
+    <div
+      key={user.id}
+      className="
+        bg-white
+        border
+        rounded-3xl
+        p-5
+        shadow-sm
+      "
+    >
+
+      <div className="space-y-2">
+
+        <div>
+          <p className="text-xs text-gray-500">
+            Name
+          </p>
+
+          <p className="font-medium">
+            {user.name}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500">
+            Username
+          </p>
+
+          <p>
+            {user.username}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500">
+            Email
+          </p>
+
+          <p className="break-all">
+            {user.email}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500">
+            PDFs
+          </p>
+
+          <p>
+            {user._count.pdfDocuments}
+          </p>
+        </div>
+
+        <div>
+          <span
+            className={`
+              inline-block
+              px-3
+              py-1
+              rounded-full
+              text-sm
+              ${
+                user.role === "admin"
+                  ? "bg-purple-100 text-purple-700"
+                  : "bg-green-100 text-green-700"
+              }
+            `}
+          >
+            {user.role}
+          </span>
+        </div>
+
+        <div className="flex gap-2 pt-3">
+
+          <button
+            onClick={() =>
+              handleRole(
+                user.id,
+                user.role
+              )
+            }
+            className="
+              flex-1
+              bg-blue-500
+              text-white
+              rounded-xl
+              py-2
+            "
+          >
+            {user.role === "admin"
+              ? "Make User"
+              : "Make Admin"}
+          </button>
+
+          <button
+            onClick={() =>
+              handleDelete(
+                user.id
+              )
+            }
+            className="
+              flex-1
+              bg-red-500
+              text-white
+              rounded-xl
+              py-2
+            "
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  ))}
+
+</div>
 
       </div>
 

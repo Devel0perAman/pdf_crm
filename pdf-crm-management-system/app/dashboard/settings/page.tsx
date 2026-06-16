@@ -184,11 +184,35 @@ const [image, setImage] =
   };
 
   return (
-    <main className="max-w-6xl mx-auto pb-20">
+   <main
+  className="
+    max-w-6xl
+    mx-auto
+    px-4
+    md:px-0
+    pb-20
+  "
+>
 
-      <div className="bg-white rounded-[32px] border shadow-sm p-8">
+      <div
+  className="
+    bg-white
+    rounded-[32px]
+    border
+    shadow-sm
+    p-5
+    md:p-8
+  "
+>
 
-        <h1 className="text-3xl font-bold mb-8">
+        <h1
+  className="
+    text-2xl
+    md:text-3xl
+    font-bold
+    mb-8
+  "
+>
           My Profile
         </h1>
 
@@ -196,7 +220,15 @@ const [image, setImage] =
 
         <div className="border-b pb-8">
 
-          <div className="flex items-center gap-5">
+          <div
+  className="
+    flex
+    flex-col
+    sm:flex-row
+    items-center
+    gap-5
+  "
+>
 
   <Image
     src={profileImage}
@@ -226,19 +258,29 @@ const [image, setImage] =
       className="text-sm"
     />
 
-    <div className="flex gap-3">
+    <div
+  className="
+    flex
+    flex-col
+    sm:flex-row
+    gap-3
+    w-full
+  "
+>
 
       <button
         onClick={
           handleImageUpload
         }
         className="
-          bg-black
-          text-white
-          px-4
-          py-2
-          rounded-xl
-        "
+  bg-black
+  text-white
+  px-4
+  py-2
+  rounded-xl
+  w-full
+  sm:w-auto
+"
       >
         Upload Image
       </button>
@@ -250,11 +292,13 @@ const [image, setImage] =
           )
         }
         className="
-          border
-          px-4
-          py-2
-          rounded-xl
-        "
+  border
+  px-4
+  py-2
+  rounded-xl
+  w-full
+  sm:w-auto
+"
       >
         Remove Image
       </button>
@@ -265,7 +309,16 @@ const [image, setImage] =
 
 </div>
 
-          <div className="grid md:grid-cols-2 gap-5 mt-8">
+          <div
+  className="
+    grid
+    grid-cols-1
+    md:grid-cols-2
+    gap-5
+    mt-8
+  "
+>
+  </div><div className="grid md:grid-cols-2 gap-5 mt-8">
 
             <div>
 
@@ -346,13 +399,15 @@ const [image, setImage] =
               handleProfile
             }
             className="
-              mt-6
-              bg-green-500
-              text-white
-              px-6
-              py-3
-              rounded-xl
-            "
+  mt-6
+  bg-green-500
+  text-white
+  px-6
+  py-3
+  rounded-xl
+  w-full
+  md:w-auto
+"
           >
             Save Profile
           </button>
@@ -367,7 +422,14 @@ const [image, setImage] =
             Account Security
           </h2>
 
-          <div className="grid md:grid-cols-2 gap-5">
+          <div
+  className="
+    grid
+    grid-cols-1
+    md:grid-cols-2
+    gap-5
+  "
+>
 
             <input
               type="password"
@@ -412,13 +474,15 @@ const [image, setImage] =
               handlePassword
             }
             className="
-              mt-5
-              bg-black
-              text-white
-              px-6
-              py-3
-              rounded-xl
-            "
+  mt-5
+  bg-black
+  text-white
+  px-6
+  py-3
+  rounded-xl
+  w-full
+  md:w-auto
+"
           >
             Change Password
           </button>
@@ -433,18 +497,27 @@ const [image, setImage] =
             Support Access
           </h2>
 
-          <div className="flex flex-wrap gap-4">
+          <div
+  className="
+    flex
+    flex-col
+    sm:flex-row
+    gap-4
+  "
+>
 
             <button
               onClick={
                 handleLogout
               }
               className="
-                border
-                px-6
-                py-3
-                rounded-xl
-              "
+  border
+  px-6
+  py-3
+  rounded-xl
+  w-full
+  sm:w-auto
+"
             >
               Logout
             </button>
@@ -454,12 +527,14 @@ const [image, setImage] =
                 handleDelete
               }
               className="
-                bg-red-500
-                text-white
-                px-6
-                py-3
-                rounded-xl
-              "
+  bg-red-500
+  text-white
+  px-6
+  py-3
+  rounded-xl
+  w-full
+  sm:w-auto
+"
             >
               Delete Account
             </button>

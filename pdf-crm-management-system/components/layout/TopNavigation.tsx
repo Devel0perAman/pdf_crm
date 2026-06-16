@@ -93,7 +93,7 @@ export default function TopNavigation() {
     ).length;
 
   return (
-    <header className="px-8 lg:px-12 py-6">
+    <header className="px-4 sm:px-6 lg:px-12 py-4 sm:py-6">
 
       <div className="flex items-center justify-between">
 
@@ -105,8 +105,10 @@ export default function TopNavigation() {
         >
           <div
             className="
-              h-12
-              w-12
+              h-10
+w-10
+sm:h-12
+sm:w-12
               rounded-2xl
               bg-black
               text-white
@@ -126,16 +128,17 @@ export default function TopNavigation() {
 
         <div
           className="
-            bg-white/80
-            backdrop-blur-xl
-            border
-            border-white/50
-            rounded-2xl
-            p-1.5
-            flex
-            items-center
-            gap-1
-            shadow-[0_8px_30px_rgba(0,0,0,0.06)]
+          desktop-only
+          bg-white/80
+          backdrop-blur-xl
+          border
+          border-white/50
+          rounded-2xl
+          p-1.5
+          flex
+          items-center
+          gap-1
+          shadow-[0_8px_30px_rgba(0,0,0,0.06)]
           "
         >
 
@@ -202,12 +205,14 @@ export default function TopNavigation() {
         </div>
 
         {/* Right Side */}
-
-        <div className="flex items-center gap-3">
+<div className="flex items-center gap-2 sm:gap-3">
+        
 
           <div
             className="
-              bg-white/80
+             hidden
+    sm:flex
+    bg-white/80
               backdrop-blur-xl
               border
               border-white/50
@@ -235,8 +240,10 @@ export default function TopNavigation() {
 
           <button
             className="
-              h-11
-              w-11
+              h-10
+w-10
+sm:h-11
+sm:w-11
               bg-white/80
               backdrop-blur-xl
               border
@@ -264,8 +271,10 @@ export default function TopNavigation() {
   onClick={() => setOpen(!open)}
   className="
     relative
-    h-11
-    w-11
+    h-10
+w-10
+sm:h-11
+sm:w-11
     bg-white/80
     backdrop-blur-xl
     border
@@ -285,8 +294,8 @@ export default function TopNavigation() {
   <span
     className="
       absolute
-      -top-1.5
-      -right-1.5
+      -top-1
+-right-1
       min-w-[18px]
       h-[18px]
       px-1
@@ -314,16 +323,18 @@ export default function TopNavigation() {
           {open && (
   <div
     className="
-      absolute
-      top-24
-      right-0
-      w-[360px]
-      bg-white
-      border
-      rounded-3xl
-      shadow-2xl
-      p-4
-      z-[999]
+       absolute
+  top-14
+  right-0
+  w-[320px]
+  sm:w-[360px]
+  max-w-[calc(100vw-20px)]
+  bg-white
+  border
+  rounded-3xl
+  shadow-2xl
+  p-4
+  z-[999]
     "
     style={{
       right: -10,
@@ -373,7 +384,7 @@ export default function TopNavigation() {
                           "
                         >
 
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between gap-3">
 
                             <h4 className="font-semibold">
                               {item.title}
