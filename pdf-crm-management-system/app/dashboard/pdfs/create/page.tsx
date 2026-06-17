@@ -299,6 +299,7 @@ export default function CreatePdfPage() {
       </div>
       <div
   className="
+   md:hidden
     bg-white
     rounded-2xl
     border

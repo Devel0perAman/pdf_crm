@@ -11,104 +11,111 @@ export const createPdf = async (
 ) => {
   try {
     const {
-  title,
-  recipientEmail,
-  descriptionRichtext,
-  descriptionHtml,
-  textContent,
-  signatureType,
-  signatureData,
-} = req.body;
+      title,
+      recipientEmail,
+      descriptionRichtext,
+      descriptionHtml,
+      textContent,
+      signatureType,
+      signatureData,
+    } = req.body;
 
-if (!recipientEmail?.trim()) {
-  return res.status(400).json({
-    message:
-      "Recipient email is required",
-  });
-}
+    if (!recipientEmail?.trim()) {
+      return res.status(400).json({
+        message:
+          "Recipient email is required",
+      });
+    }
 
-if (!title?.trim()) {
-  return res.status(400).json({
-    message: "Title is required",
-  });
-}
+    if (!title?.trim()) {
+      return res.status(400).json({
+        message: "Title is required",
+      });
+    }
 
-if (!signatureType || !signatureData) {
-  return res.status(400).json({
-    message: "Signature is required",
-  });
-}
+    if (!signatureType || !signatureData) {
+      return res.status(400).json({
+        message: "Signature is required",
+      });
+    }
 
-const pdf = await prisma.pdfDocument.create({
-  data: {
-    userId: req.user!.id,
-    title,
-    recipientEmail,
-    descriptionRichtext,
-    descriptionHtml,
-    textContent,
-    signatureType,
-    signatureData,
-  },
-});
+    const pdf = await prisma.pdfDocument.create({
+      data: {
+        userId: req.user!.id,
+        title,
+        recipientEmail,
+        descriptionRichtext,
+        descriptionHtml,
+        textContent,
+        signatureType,
+        signatureData,
+      },
+    });
 
-await prisma.activityLog.create({
-  data: {
-    userId: req.user!.id,
-    documentId: pdf.id,
-    action: "PDF_CREATED",
-  },
-});
+    await prisma.activityLog.create({
+      data: {
+        userId: req.user!.id,
+        documentId: pdf.id,
+        action: "PDF_CREATED",
+      },
+    });
 
     await createRecordStorage({
-  id: pdf.id,
-  title: pdf.title,
-  descriptionHtml:
-    pdf.descriptionHtml || "",
-  textContent:
-    pdf.textContent || "",
-});
+      id: pdf.id,
+      title: pdf.title,
+      descriptionHtml:
+        pdf.descriptionHtml || "",
+      textContent:
+        pdf.textContent || "",
+    });
 
     await prisma.notification.create({
-  data: {
-    userId: req.user!.id,
-    title: "PDF Created",
-    message:
-      `Document "${pdf.title}" was created successfully.`,
-  },
-});
+      data: {
+        userId: req.user!.id,
+        title: "PDF Created",
+        message:
+          `Document "${pdf.title}" was created successfully.`,
+      },
+    });
 
-const shareLink =
-  `${process.env.FRONTEND_URL}/shared/${pdf.id}`;
+    const shareLink =
+      `${process.env.FRONTEND_URL}/shared/${pdf.id}`;
 
-await prisma.pdfDocument.update({
-  where: {
-    id: pdf.id,
-  },
-  data: {
-    shareLink,
-  },
-});
+    await prisma.pdfDocument.update({
+      where: {
+        id: pdf.id,
+      },
+      data: {
+        shareLink,
+      },
+    });
 
-await sendEmail(
-  recipientEmail,
-  "PDF Shared With You",
-  `
-    <h2>${pdf.title}</h2>
+    try {
+  await sendEmail(
+    recipientEmail,
+    "PDF Shared With You",
+    `
+      <h2>${pdf.title}</h2>
 
-    <p>
-      A PDF document has been shared with you.
-    </p>
+      <p>
+        A PDF document has been shared with you.
+      </p>
 
-    <p>
-      Click below to open it:
-    </p>
+      <p>
+        Click below to open it:
+      </p>
 
-    <a href="${shareLink}">
-      Open PDF
-    </a>
-  `
-);
+      <a href="${shareLink}">
+        Open PDF
+      </a>
+    `
+  );
+} catch (error) {
+  console.error(
+    "Email sending failed:",
+    error
+  );
+}
 
     return res.status(201).json(pdf);
   } catch (error) {
@@ -126,9 +133,24 @@ export const getAllPdfs = async (
 ) => {
   const pdfs =
     await prisma.pdfDocument.findMany({
-      where: {
-        userId: req.user!.id,
+      where:
+        req.user?.role === "admin"
+          ? {}
+          : {
+            userId:
+              req.user!.id,
+          },
+
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
       },
+
       orderBy: {
         createdAt: "desc",
       },
@@ -152,23 +174,29 @@ export const getPdfById = async (
     });
   }
 
-const pdf =
-  await prisma.pdfDocument.findFirst({
-    where: {
-      id: pdfId,
-      userId: req.user!.id,
-    },
-    include: {
-      signatures: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
-          username: true,
+  const pdf =
+    await prisma.pdfDocument.findFirst({
+      where:
+        req.user?.role === "admin"
+          ? {
+            id: pdfId,
+          }
+          : {
+            id: pdfId,
+            userId:
+              req.user!.id,
+          },
+      include: {
+        signatures: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
         },
       },
-    },
-  });
+    });
 
   if (!pdf) {
     return res.status(404).json({
@@ -195,52 +223,72 @@ export const updatePdf = async (
   }
 
   if (
-  req.body.title !== undefined &&
-  !req.body.title.trim()
-) {
-  return res.status(400).json({
-    message: "Title cannot be empty",
-  });
-}
+    req.body.title !== undefined &&
+    !req.body.title.trim()
+  ) {
+    return res.status(400).json({
+      message: "Title cannot be empty",
+    });
+  }
 
-const existingPdf =
-  await prisma.pdfDocument.findFirst({
-    where: {
-      id: pdfId,
-      userId: req.user!.id,
-    },
-  });
+  const existingPdf =
+    await prisma.pdfDocument.findUnique({
+      where: {
+        id: pdfId,
+      },
+    });
 
-if (!existingPdf) {
-  return res.status(404).json({
-    message: "PDF not found",
-  });
-}
+  if (!existingPdf) {
+    return res.status(404).json({
+      message: "PDF not found",
+    });
+  }
 
-const pdf =
-  await prisma.pdfDocument.update({
-    where: {
-      id: pdfId,
-    },
-    data: req.body,
-  });
+  if (
+    req.user?.role !== "admin" &&
+    existingPdf.userId !==
+    req.user!.id
+  ) {
+    return res.status(403).json({
+      message:
+        "Access denied",
+    });
+  }
+
+  if (
+    existingPdf.userId !==
+    req.user!.id
+  ) {
+    return res.status(403).json({
+      message:
+        "You cannot edit another user's PDF",
+    });
+  }
+
+  const pdf =
+    await prisma.pdfDocument.update({
+      where: {
+        id: pdfId,
+      },
+      data: req.body,
+    });
 
   await prisma.activityLog.create({
-  data: {
-    userId: req.user!.id,
-    documentId: pdf.id,
-    action: "PDF_UPDATED",
-  },
-});
+    data: {
+      userId: req.user!.id,
+      documentId: pdf.id,
+      action: "PDF_UPDATED",
+    },
+  });
 
-await prisma.notification.create({
-  data: {
-    userId: req.user!.id,
-    title: "PDF Updated",
-    message:
-      `Document "${pdf.title}" was updated successfully.`,
-  },
-}); 
+  await prisma.notification.create({
+    data: {
+      userId: req.user!.id,
+      title: "PDF Updated",
+      message:
+        `Document "${pdf.title}" was updated successfully.`,
+    },
+  });
 
   res.json(pdf);
 };
@@ -260,47 +308,57 @@ export const deletePdf = async (
     });
   }
 
-const existingPdf =
-  await prisma.pdfDocument.findFirst({
-    where: {
-      id: pdfId,
-      userId: req.user!.id,
-    },
-  });
+  const existingPdf =
+    await prisma.pdfDocument.findUnique({
+      where: {
+        id: pdfId,
+      },
+    });
 
-if (!existingPdf) {
-  return res.status(404).json({
-    message: "PDF not found",
+  if (!existingPdf) {
+    return res.status(404).json({
+      message: "PDF not found",
+    });
+  }
+
+  if (
+  req.user?.role !== "admin" &&
+  existingPdf.userId !==
+    req.user!.id
+) {
+  return res.status(403).json({
+    message:
+      "Access denied",
   });
 }
 
-await prisma.signature.deleteMany({
-  where: {
-    pdfId,
-  },
-});
+  await prisma.signature.deleteMany({
+    where: {
+      pdfId,
+    },
+  });
 
-await prisma.pdfDocument.delete({
-  where: {
-    id: pdfId,
-  },
-});
+  await prisma.pdfDocument.delete({
+    where: {
+      id: pdfId,
+    },
+  });
 
   await prisma.activityLog.create({
-  data: {
-    userId: req.user!.id,
-    action: "PDF_DELETED",
-  },
-});
+    data: {
+      userId: req.user!.id,
+      action: "PDF_DELETED",
+    },
+  });
 
-await prisma.notification.create({
-  data: {
-    userId: req.user!.id,
-    title: "PDF Deleted",
-    message:
-      `Document "${existingPdf.title}" was deleted.`,
-  },
-});
+  await prisma.notification.create({
+    data: {
+      userId: req.user!.id,
+      title: "PDF Deleted",
+      message:
+        `Document "${existingPdf.title}" was deleted.`,
+    },
+  });
 
   res.json({
     success: true,

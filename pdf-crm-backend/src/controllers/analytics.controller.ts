@@ -9,39 +9,62 @@ export const getAnalytics =
     res: Response
   ) => {
     try {
-      const userId =
-        req.user!.id;
+      const isAdmin =
+        req.user?.role === "admin";
 
       const totalPdfs =
         await prisma.pdfDocument.count({
-          where: {
-            userId,
-          },
+          where: isAdmin
+            ? {}
+            : {
+                userId:
+                  req.user!.id,
+              },
         });
 
       const totalSignatures =
         await prisma.signature.count({
-          where: {
-            userId,
-          },
+          where: isAdmin
+            ? {}
+            : {
+                userId:
+                  req.user!.id,
+              },
         });
 
       const totalActivities =
         await prisma.activityLog.count({
-          where: {
-            userId,
-          },
+          where: isAdmin
+            ? {}
+            : {
+                userId:
+                  req.user!.id,
+              },
         });
 
       const recentPdfs =
         await prisma.pdfDocument.findMany({
-          where: {
-            userId,
+          where: isAdmin
+            ? {}
+            : {
+                userId:
+                  req.user!.id,
+              },
+
+          include: {
+            user: {
+              select: {
+                name: true,
+                username: true,
+              },
+            },
           },
+
           orderBy: {
             createdAt:
               "desc",
           },
+
           take: 5,
         });
 

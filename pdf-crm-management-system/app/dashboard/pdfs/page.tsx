@@ -17,8 +17,15 @@ interface PdfDocument {
   title: string;
   createdAt: string;
   signatureType?: string;
-}
 
+  userId: string;
+
+  user?: {
+    id: string;
+    name: string;
+    username: string;
+  };
+}
 export default function PdfListPage() {
   const [pdfs, setPdfs] = useState<
     PdfDocument[]
@@ -27,8 +34,11 @@ export default function PdfListPage() {
   const [loading, setLoading] =
     useState(true);
 
-    const [search, setSearch] =
-  useState("");
+  const [search, setSearch] =
+    useState("");
+
+  const [currentUser, setCurrentUser] =
+    useState<PdfDocument["user"] | null>(null);
 
   // fetch PDFs inside effect to avoid setting state synchronously in the effect body
 
@@ -80,13 +90,13 @@ export default function PdfListPage() {
   }, []);
 
   const filteredPdfs =
-  pdfs.filter((pdf) =>
-    pdf.title
-      .toLowerCase()
-      .includes(
-        search.toLowerCase()
-      )
-  );
+    pdfs.filter((pdf) =>
+      pdf.title
+        .toLowerCase()
+        .includes(
+          search.toLowerCase()
+        )
+    );
 
   return (
     <main>
@@ -94,7 +104,7 @@ export default function PdfListPage() {
       <div className="max-w-7xl mx-auto">
 
         <div
-  className="
+          className="
     flex
     flex-col
     md:flex-row
@@ -103,7 +113,7 @@ export default function PdfListPage() {
     gap-4
     mb-8
   "
->
+        >
 
           <div>
 
@@ -140,12 +150,12 @@ export default function PdfListPage() {
           <div className="mb-5">
 
             <input
-  value={search}
-  onChange={(e) =>
-    setSearch(e.target.value)
-  }
-  placeholder="Search PDFs..."
-  className="
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              placeholder="Search PDFs..."
+              className="
   w-full
   border
   rounded-xl
@@ -153,7 +163,7 @@ export default function PdfListPage() {
   text-sm
   md:text-base
 "
-/>
+            />
 
           </div>
 
@@ -167,245 +177,287 @@ export default function PdfListPage() {
             </div>
           ) : (
             <div className="hidden lg:block overflow-x-auto">
-            <table className="w-full">
+              <table className="w-full">
 
-              <thead>
+                <thead>
 
-                <tr className="border-b">
+                  <tr className="border-b">
 
-                  <th className="text-left py-4">
-                    Title
-                  </th>
+                    <th className="text-left py-4">
+                      Title
+                    </th>
 
-                  <th className="text-left py-4">
-                    Signature
-                  </th>
+                    <th className="text-left py-4">
+                      Created By
+                    </th>
 
-                  <th className="text-left py-4">
-                    Date
-                  </th>
+                    <th className="text-left py-4">
+                      Signature
+                    </th>
 
-                  <th className="text-right py-4">
-                    Actions
-                  </th>
+                    <th className="text-left py-4">
+                      Date
+                    </th>
 
-                </tr>
-
-              </thead>
-
-              <tbody>
-
-               {filteredPdfs.map((doc) => (
-                  <tr
-                    key={doc.id}
-                    className="border-b"
-                  >
-
-                    <td className="py-5">
-                      {doc.title}
-                    </td>
-
-                    <td>
-                      {doc.signatureType ||
-                        "-"}
-                    </td>
-
-                    <td>
-                      {new Date(
-                        doc.createdAt
-                      ).toLocaleDateString()}
-                    </td>
-
-                    <td className="text-right">
-
-                      <Link
-                        href={`/dashboard/pdfs/${doc.id}`}
-                        className="mr-2 px-3 py-2 border rounded-lg"
-                      >
-                        View
-                      </Link>
-
-                      <Link
-                        href={`/dashboard/pdfs/edit/${doc.id}`}
-                        className="mr-2 px-3 py-2 border rounded-lg"
-                      >
-                        Edit
-                      </Link>
-
-                      <button
-                        onClick={() =>
-                          handleDelete(
-                            doc.id
-                          )
-                        }
-                        className="px-3 py-2 border rounded-lg text-red-500"
-                      >
-                        Delete
-                      </button>
-
-                      <button
-  onClick={async () => {
-    try {
-      const response =
-        await sharePdf(doc.id);
-
-      navigator.clipboard.writeText(
-        response.data.shareLink
-      );
-
-      alert(
-        "Share link copied!"
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  }}
-  className="mr-2 px-3 py-2 ml-2 border rounded-lg text-blue-500"
->
-  Share
-</button>
-
-                    </td>
+                    <th className="text-right py-4">
+                      Actions
+                    </th>
 
                   </tr>
-                ))}
 
-              </tbody>
+                </thead>
 
-            </table>
+                <tbody>
+
+                  {filteredPdfs.map((doc) => (
+                    <tr
+                      key={doc.id}
+                      className="border-b"
+                    >
+
+                      <td className="py-5">
+                        {doc.title}
+                      </td>
+
+                      <td>
+                        <div>
+                          <p className="font-medium">
+                            {doc.user?.name || "-"}
+                          </p>
+
+                          <p className="text-xs text-gray-500">
+                            @{doc.user?.username || "-"}
+                          </p>
+                        </div>
+                      </td>
+
+                      <td>
+                        {doc.signatureType ||
+                          "-"}
+                      </td>
+
+                      <td>
+                        {new Date(
+                          doc.createdAt
+                        ).toLocaleDateString()}
+                      </td>
+
+                      <td className="text-right">
+
+                        <Link
+                          href={`/dashboard/pdfs/${doc.id}`}
+                          className="mr-2 px-3 py-2 border rounded-lg"
+                        >
+                          View
+                        </Link>
+
+                        {currentUser?.id ===
+                          doc.userId && (
+                            <Link
+                              href={`/dashboard/pdfs/edit/${doc.id}`}
+                              className="
+      mr-2
+      px-3
+      py-2
+      border
+      rounded-lg
+    "
+                            >
+                              Edit
+                            </Link>
+                          )}
+
+                        <button
+                          onClick={() =>
+                            handleDelete(
+                              doc.id
+                            )
+                          }
+                          className="px-3 py-2 border rounded-lg text-red-500"
+                        >
+                          Delete
+                        </button>
+
+                        <button
+                          onClick={async () => {
+                            try {
+                              const response =
+                                await sharePdf(doc.id);
+
+                              navigator.clipboard.writeText(
+                                response.data.shareLink
+                              );
+
+                              alert(
+                                "Share link copied!"
+                              );
+                            } catch (error) {
+                              console.error(error);
+                            }
+                          }}
+                          className="mr-2 px-3 py-2 ml-2 border rounded-lg text-blue-500"
+                        >
+                          Share
+                        </button>
+
+                      </td>
+
+                    </tr>
+                  ))}
+
+                </tbody>
+
+              </table>
             </div>
 
           )}
 
           <div className="lg:hidden space-y-4">
 
-  {filteredPdfs.map((doc) => (
-    <div
-      key={doc.id}
-      className="
+            {filteredPdfs.map((doc) => (
+              <div
+                key={doc.id}
+                className="
         bg-white
         border
         rounded-3xl
         p-5
         shadow-sm
       "
-    >
+              >
 
-      <div className="space-y-3">
+                <div className="space-y-3">
 
-        <div>
-          <p className="text-xs text-gray-500">
-            Title
-          </p>
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Title
+                    </p>
 
-          <p className="font-semibold">
-            {doc.title}
-          </p>
-        </div>
+                    <p className="font-semibold">
+                      {doc.title}
+                    </p>
+                  </div>
 
-        <div>
-          <p className="text-xs text-gray-500">
-            Signature
-          </p>
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Created By
+                    </p>
 
-          <p>
-            {doc.signatureType || "-"}
-          </p>
-        </div>
+                    <p className="font-medium">
+                      {doc.user?.name || "-"}
+                    </p>
 
-        <div>
-          <p className="text-xs text-gray-500">
-            Created
-          </p>
+                    <p className="text-xs text-gray-500">
+                      @{doc.user?.username || "-"}
+                    </p>
+                  </div>
 
-          <p>
-            {new Date(
-              doc.createdAt
-            ).toLocaleDateString()}
-          </p>
-        </div>
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Signature
+                    </p>
 
-        <div className="grid grid-cols-2 gap-2 pt-3">
+                    <p>
+                      {doc.signatureType || "-"}
+                    </p>
+                  </div>
 
-          <Link
-            href={`/dashboard/pdfs/${doc.id}`}
-            className="
+                  <div>
+                    <p className="text-xs text-gray-500">
+                      Created
+                    </p>
+
+                    <p>
+                      {new Date(
+                        doc.createdAt
+                      ).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-3">
+
+                    <Link
+                      href={`/dashboard/pdfs/${doc.id}`}
+                      className="
               text-center
               border
               rounded-xl
               py-2
             "
-          >
-            View
-          </Link>
+                    >
+                      View
+                    </Link>
 
-          <Link
-            href={`/dashboard/pdfs/edit/${doc.id}`}
-            className="
-              text-center
-              border
-              rounded-xl
-              py-2
-            "
-          >
-            Edit
-          </Link>
+                    {currentUser?.id ===
+                      doc.userId && (
+                        <Link
+                          href={`/dashboard/pdfs/edit/${doc.id}`}
+                          className="
+      text-center
+      border
+      rounded-xl
+      py-2
+    "
+                        >
+                          Edit
+                        </Link>
+                      )}
 
-          <button
-            onClick={async () => {
-              try {
-                const response =
-                  await sharePdf(
-                    doc.id
-                  );
+                    <button
+                      onClick={async () => {
+                        try {
+                          const response =
+                            await sharePdf(
+                              doc.id
+                            );
 
-                navigator.clipboard.writeText(
-                  response.data.shareLink
-                );
+                          navigator.clipboard.writeText(
+                            response.data.shareLink
+                          );
 
-                alert(
-                  "Share link copied!"
-                );
-              } catch (error) {
-                console.error(
-                  error
-                );
-              }
-            }}
-            className="
+                          alert(
+                            "Share link copied!"
+                          );
+                        } catch (error) {
+                          console.error(
+                            error
+                          );
+                        }
+                      }}
+                      className="
               text-blue-500
               border
               rounded-xl
               py-2
             "
-          >
-            Share
-          </button>
+                    >
+                      Share
+                    </button>
 
-          <button
-            onClick={() =>
-              handleDelete(
-                doc.id
-              )
-            }
-            className="
+                    <button
+                      onClick={() =>
+                        handleDelete(
+                          doc.id
+                        )
+                      }
+                      className="
               text-red-500
               border
               rounded-xl
               py-2
             "
-          >
-            Delete
-          </button>
+                    >
+                      Delete
+                    </button>
 
-        </div>
+                  </div>
 
-      </div>
+                </div>
 
-    </div>
-  ))}
+              </div>
+            ))}
 
-</div>
+          </div>
 
         </div>
 
