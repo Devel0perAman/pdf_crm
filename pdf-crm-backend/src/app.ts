@@ -17,6 +17,7 @@ const app = express();
 app.use(
   cors({
     origin: [
+      "https://peru-caterpillar-926837.hostingersite.com",
       "https://pdfcrm.webtechseosolutions.com",
       "https://pdfcrm.vercel.app",
       "http://localhost:3000"
